@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import su.nightexpress.nightcore.config.FileConfig;
 import su.nightexpress.nightcore.core.config.CoreLang;
+import su.nightexpress.nightcore.util.Version;
 import su.nightexpress.sunlight.config.PermissionTree;
 import su.nightexpress.sunlight.hook.placeholder.PlaceholderRegistry;
 import su.nightexpress.sunlight.module.Module;
@@ -13,6 +14,7 @@ import su.nightexpress.sunlight.module.nerfphantoms.command.PhantomsCommandProvi
 import su.nightexpress.sunlight.module.nerfphantoms.config.PhantomsConfig;
 import su.nightexpress.sunlight.module.nerfphantoms.config.PhantomsLang;
 import su.nightexpress.sunlight.module.nerfphantoms.config.PhantomsPerms;
+import su.nightexpress.sunlight.module.nerfphantoms.listener.PaperPhantomsListener;
 import su.nightexpress.sunlight.module.nerfphantoms.listener.PhantomsListener;
 import su.nightexpress.sunlight.user.SunUser;
 import su.nightexpress.sunlight.user.property.UserPropertyRegistry;
@@ -30,7 +32,10 @@ public class PhantomsModule extends Module {
         UserPropertyRegistry.register(PhantomsProperties.ANTI_PHANTOM);
 
         this.addListener(new PhantomsListener(this.plugin, this));
-        this.addAsyncTask(this::resetRestTime, 600); // TODO Config
+        if (Version.isPaper()) {
+            this.addListener(new PaperPhantomsListener(this.plugin, this));
+        }
+        this.addTask(this::resetRestTime, 600); // TODO Config
     }
 
     @Override
@@ -60,7 +65,11 @@ public class PhantomsModule extends Module {
             SunUser user = plugin.getUserManager().getOrFetch(player);
             if (!user.getPropertyOrDefault(PhantomsProperties.ANTI_PHANTOM)) continue;
 
-            player.setStatistic(Statistic.TIME_SINCE_REST, 0);
+            this.resetRestTime(player);
         }
+    }
+
+    public void resetRestTime(@NotNull Player player) {
+        player.setStatistic(Statistic.TIME_SINCE_REST, 0);
     }
 }

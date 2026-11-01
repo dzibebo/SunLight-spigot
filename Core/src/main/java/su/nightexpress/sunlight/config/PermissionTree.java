@@ -2,6 +2,7 @@ package su.nightexpress.sunlight.config;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -63,6 +64,14 @@ public class PermissionTree {
     }
 
     @NotNull
+    public Permission permission(@NotNull String name, @NotNull PermissionDefault defaultValue) {
+        Permission permission = this.children(name, defaultValue);
+
+        this.permissions.put(permission.getName(), permission);
+        return permission;
+    }
+
+    @NotNull
     public Permission getRoot() {
         return new Permission(this.childrenNode("*"));
     }
@@ -70,6 +79,11 @@ public class PermissionTree {
     @NotNull
     public Permission children(@NotNull String name) {
         return new Permission(this.childrenNode(name));
+    }
+
+    @NotNull
+    public Permission children(@NotNull String name, @NotNull PermissionDefault defaultValue) {
+        return new Permission(this.childrenNode(name), defaultValue);
     }
 
     @NotNull
@@ -100,7 +114,9 @@ public class PermissionTree {
         Permission root = this.getRoot();
 
         this.permissions.values().forEach(permission -> {
-            permission.addParent(root, true);
+            if (permission.getDefault() != PermissionDefault.FALSE) {
+                permission.addParent(root, true);
+            }
         });
         this.branches.values().forEach(branch -> {
             branch.accumulate().addParent(root, true);

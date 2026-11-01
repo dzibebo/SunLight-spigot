@@ -107,6 +107,10 @@ public class EssentialModule extends Module {
 
     @Override
     public void registerPlaceholders(@NotNull PlaceholderRegistry registry) {
+        registry.register("essential_custom_name", (player, payload) -> {
+            return this.getCustomName(player);
+        });
+
         if (this.settings.isInvulnerabilityEnabled()) {
             registry.register("essential_invulnerability_state", (player, payload) -> {
                 return CoreLang.STATE_ENABLED_DISALBED.get(player.isInvulnerable());
@@ -114,10 +118,6 @@ public class EssentialModule extends Module {
 
             registry.register("essential_invulnerability_bool", (player, payload) -> {
                 return String.valueOf(player.isInvulnerable());
-            });
-
-            registry.register("essential_custom_name", (player, payload) -> {
-                return this.getCustomName(player);
             });
         }
     }

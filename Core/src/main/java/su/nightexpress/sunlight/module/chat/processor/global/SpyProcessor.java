@@ -51,6 +51,6 @@ public class SpyProcessor implements ChatProcessor<ChatContext> {
         if (format == null) return;
 
         String formatted = placeholderContext.apply(format);
-        module.sendSpyInfo(player, message, formatted, type);
+        module.sendSpyInfo(player, message, formatted, type, context);
     }
 }

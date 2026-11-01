@@ -1,6 +1,7 @@
 package su.nightexpress.sunlight.module.chat.core;
 
 import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import su.nightexpress.sunlight.config.PermissionTree;
 import su.nightexpress.sunlight.config.Perms;
 
@@ -46,5 +47,6 @@ public class ChatPerms {
     public static final Permission BYPASS_ANTI_CAPS              = BYPASS.permission("moderation.anticaps");
     public static final Permission BYPASS_ANTI_FLOOD             = BYPASS.permission("moderation.antiflood");
     public static final Permission BYPASS_PROFANITY_FILTER       = BYPASS.permission("moderation.profanity.filter");
-    public static final Permission BYPASS_SPY_MONITOR            = BYPASS.permission("spy.monitor");
+    public static final Permission BYPASS_SPY_MONITOR            = BYPASS.permission("spy.monitor", PermissionDefault.FALSE);
+    public static final Permission BYPASS_SPY_OVERRIDE           = BYPASS.permission("spy.override", PermissionDefault.OP);
 }

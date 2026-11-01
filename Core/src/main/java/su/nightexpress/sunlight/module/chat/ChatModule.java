@@ -445,22 +445,50 @@ public class ChatModule extends Module {
     @NotNull
     public Set<Player> getSpies(@NotNull SpyType type) {
         UserProperty<Boolean> property = ChatProperties.getSpyInfoProperty(type);
+        org.bukkit.permissions.Permission permission = switch (type) {
+            case CHAT -> ChatPerms.COMMAND_SPY_CHAT;
+            case COMMAND -> ChatPerms.COMMAND_SPY_COMMAND;
+            case SOCIAL -> ChatPerms.COMMAND_SPY_SOCIAL;
+        };
 
         return this.plugin.getServer().getOnlinePlayers().stream()
-            .filter(player -> this.userManager.getOrFetch(player).getPropertyOrDefault(property))
+            .filter(player -> player.hasPermission(permission) && this.userManager.getOrFetch(player).getPropertyOrDefault(property))
             .collect(Collectors.toSet());
     }
 
     public void sendSpyInfo(@NotNull Player player, @NotNull String message, @NotNull String format,
                             @NotNull SpyType spyType) {
+        this.sendSpyInfo(player, message, format, spyType, null);
+    }
+
+    public void sendSpyInfo(@NotNull Player player, @NotNull String message, @NotNull String format,
+                            @NotNull SpyType spyType, @Nullable ChatContext chatContext) {
         PlaceholderContext context = PlaceholderContext.builder()
             .with(CommonPlaceholders.PLAYER.resolver(player))
+            .andThen(CommonPlaceholders.forPlaceholderAPI(player))
             .with(SLPlaceholders.GENERIC_MESSAGE, () -> message)
             .build();
 
         String formatted = context.apply(format);
 
-        this.getSpies(spyType).forEach(spy -> Players.sendMessage(spy, formatted));
+        boolean isBypassed = player.hasPermission(ChatPerms.BYPASS_SPY_MONITOR);
+
+        for (Player spy : this.getSpies(spyType)) {
+            if (spy.equals(player)) continue;
+
+            if (chatContext instanceof MessageContext messageContext) {
+                if (messageContext.getViewers().contains(spy)) continue;
+            }
+            else if (chatContext instanceof ConversationContext conversationContext) {
+                if (conversationContext.getTarget().equals(spy)) continue;
+            }
+
+            if (isBypassed && !spy.isOp() && !spy.hasPermission(ChatPerms.BYPASS_SPY_OVERRIDE)) {
+                continue;
+            }
+
+            Players.sendMessage(spy, formatted);
+        }
 
         SunUser user = this.userManager.getOrFetch(player);
         if (this.spyLogger != null && user.getPropertyOrDefault(ChatProperties.getSpyLogProperty(spyType))) {
@@ -510,7 +538,7 @@ public class ChatModule extends Module {
             processors.add(new MentionProcessor(this.mentionsPattern, this.userManager)); // Inject mentions in postProcess in prepared format.
         }
 
-        if (this.settings.isSpyEnabled() && !player.hasPermission(ChatPerms.BYPASS_SPY_MONITOR)) {
+        if (this.settings.isSpyEnabled()) {
             processors.add(new SpyProcessor());
         }
 
@@ -527,6 +555,16 @@ public class ChatModule extends Module {
             viewers.clear();
             viewers.addAll(context.getViewers());
         });
+        if (event instanceof su.nightexpress.nightcore.bridge.spigot.event.SpigotChatEvent spigotChatEvent) {
+            try {
+                java.lang.reflect.Field backendField = spigotChatEvent.getClass().getDeclaredField("backend");
+                backendField.setAccessible(true);
+                org.bukkit.event.player.AsyncPlayerChatEvent backend = (org.bukkit.event.player.AsyncPlayerChatEvent) backendField.get(spigotChatEvent);
+                if (backend != null) {
+                    backend.getRecipients().removeIf(p -> !context.getViewers().contains(p));
+                }
+            } catch (Throwable ignored) {}
+        }
         event.message(NightMessage.parse(context.getMessage()));
         event.renderer((source, sourceDisplayName, message, viewer) -> {
             return NightMessage.parse(context.getFormat());
@@ -561,7 +599,7 @@ public class ChatModule extends Module {
             }
         }
 
-        if (this.settings.isSpyEnabled() && !player.hasPermission(ChatPerms.BYPASS_SPY_MONITOR)) {
+        if (this.settings.isSpyEnabled()) {
             processors.add(new SpyProcessor());
         }
 
@@ -635,7 +673,7 @@ public class ChatModule extends Module {
             processors.add(new ItemDisplayProcessor()); // Inject item display in postProcess in prepared format.
         }
 
-        if (this.settings.isSpyEnabled() && !player.hasPermission(ChatPerms.BYPASS_SPY_MONITOR)) {
+        if (this.settings.isSpyEnabled()) {
             processors.add(new SpyProcessor());
         }
 

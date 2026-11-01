@@ -151,19 +151,25 @@ public class ChatChannel implements PlaceholderResolvable {
         if (distanceType == ChannelDistanceType.SERVER_WIDE) return true;
 
         if (recipient instanceof Entity listener) {
-            if (listener.getWorld() == speaker.getWorld()) {
-                if (distanceType == ChannelDistanceType.WORLD_WIDE) return true;
-
-                if (distanceType == ChannelDistanceType.RANGE) {
-                    double range = this.distance.range();
-                    if (range <= 0D) return true;
-
-                    double rangeSqr = range * range;
-                    double distanceSqr = listener.getLocation().distanceSquared(speaker.getLocation());
-
-                    return distanceSqr <= rangeSqr;
-                }
+            if (!listener.getWorld().equals(speaker.getWorld())) {
+                return false;
             }
+
+            double range = this.distance.range();
+            if (distanceType == ChannelDistanceType.RANGE || (distanceType == ChannelDistanceType.WORLD_WIDE && range > 0D)) {
+                if (range <= 0D) return true;
+
+                double rangeSqr = range * range;
+                double distanceSqr = listener.getLocation().distanceSquared(speaker.getLocation());
+
+                return distanceSqr <= rangeSqr;
+            }
+
+            if (distanceType == ChannelDistanceType.WORLD_WIDE) {
+                return true;
+            }
+
+            return false;
         }
 
         return true;

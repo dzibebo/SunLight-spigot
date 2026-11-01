@@ -58,6 +58,10 @@ public class PhantomsCommandProvider extends AbstractCommandProvider {
             user.setProperty(PhantomsProperties.ANTI_PHANTOM, state);
             user.markDirty();
 
+            if (state) {
+                this.module.resetRestTime(target);
+            }
+
             if (context.getSender() != target) {
                 this.module.sendPrefixed(PhantomsLang.COMMAND_NO_PHANTOM_TOGGLE_OTHERS, context.getSender(), builder -> builder
                     .with(SLPlaceholders.GENERIC_STATE, () -> CoreLang.STATE_ENABLED_DISALBED.get(state))

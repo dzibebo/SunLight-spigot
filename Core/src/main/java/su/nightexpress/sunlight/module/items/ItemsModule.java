@@ -18,6 +18,11 @@ public class ItemsModule extends Module {
         this.settings = new ItemsSettings();
     }
 
+    @NotNull
+    public ItemsSettings getSettings() {
+        return this.settings;
+    }
+
     @Override
     protected void loadModule(@NotNull FileConfig config) {
         this.settings.load(config);
@@ -37,7 +42,7 @@ public class ItemsModule extends Module {
     @Override
     protected void registerCommands() {
         this.commandRegistry.addProvider("item", new ItemCommandProvider(this.plugin, this, this.settings, this.userManager));
-        this.commandRegistry.addProvider("lore", new LoreCommandsProvider(this.plugin, this));
+        this.commandRegistry.addProvider("lore", new LoreCommandsProvider(this.plugin, this, this.settings));
     }
 
     @Override

@@ -45,6 +45,16 @@ public class ItemsLang implements LangContainer {
         GRAY.wrap(SOFT_RED.wrap(GENERIC_ITEM) + " has no lore.")
     );
 
+    public static final MessageLocale ERROR_ITEM_LORE_MAX_LINES = LangEntry.builder("Error.ItemLoreMaxLines").chatMessage(
+        Sound.ENTITY_VILLAGER_NO,
+        GRAY.wrap("Item lore can not have more than " + SOFT_RED.wrap(GENERIC_MAX) + " lines.")
+    );
+
+    public static final MessageLocale ERROR_ITEM_LORE_LINE_TOO_LONG = LangEntry.builder("Error.ItemLoreLineTooLong").chatMessage(
+        Sound.ENTITY_VILLAGER_NO,
+        GRAY.wrap("Lore line can not be longer than " + SOFT_RED.wrap(GENERIC_MAX) + " characters.")
+    );
+
     public static final MessageLocale ITEM_SET_AMOUNT_FEEDBACK = LangEntry.builder("Command.Item.Amount.Done").chatMessage(
         Sound.ENTITY_ITEM_PICKUP,
         GRAY.wrap("You have changed " + WHITE.wrap(GENERIC_ITEM) + "'s stack size to " + SOFT_YELLOW.wrap(GENERIC_AMOUNT + "x") + ".")

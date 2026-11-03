@@ -594,6 +594,15 @@ Error:
   ItemNotDamageable:
     - <sound:"block_anvil_place">
     - <lgray>El objeto <lred>%item%</lred> no tiene durabilidad.</lgray>
+  ItemHasNoLore:
+    - <sound:"minecraft:entity.villager.no;0.8;1.0">
+    - <lgray>El objeto <lred>%item%</lred> no tiene descripción.</lgray>
+  ItemLoreMaxLines:
+    - <sound:"minecraft:entity.villager.no;0.8;1.0">
+    - <lgray>La descripción del objeto no puede tener más de <lred>%max%</lred> líneas.</lgray>
+  ItemLoreLineTooLong:
+    - <sound:"minecraft:entity.villager.no;0.8;1.0">
+    - <lgray>La línea de descripción no puede tener más de <lred>%max%</lred> caracteres.</lgray>
   Command:
     Argument:
       InvalidSlot: <lgray><lred>%value%</lred> no es una ranura de equipo válida.</lgray>

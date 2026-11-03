@@ -14,31 +14,37 @@ import su.nightexpress.sunlight.config.Lang;
 import su.nightexpress.sunlight.module.items.ItemsLang;
 import su.nightexpress.sunlight.module.items.ItemsModule;
 import su.nightexpress.sunlight.module.items.ItemsPerms;
+import su.nightexpress.sunlight.module.items.ItemsSettings;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static su.nightexpress.sunlight.SLPlaceholders.GENERIC_ITEM;
-import static su.nightexpress.sunlight.SLPlaceholders.GENERIC_TEXT;
+import static su.nightexpress.sunlight.SLPlaceholders.*;
 
 public class LoreCommandsProvider extends AbstractCommandProvider {
 
-    private static final Permission PERMISSION_ROOT   = ItemsPerms.COMMAND.permission("lore.root");
-    private static final Permission PERMISSION_ADD    = ItemsPerms.COMMAND.permission("lore.add");
-    private static final Permission PERMISSION_INSERT = ItemsPerms.COMMAND.permission("lore.insert");
-    private static final Permission PERMISSION_CLEAR  = ItemsPerms.COMMAND.permission("lore.clear");
-    private static final Permission PERMISSION_REMOVE = ItemsPerms.COMMAND.permission("lore.remove");
+    private static final Permission PERMISSION_ROOT   = ItemsPerms.COMMAND_LORE_ROOT;
+    private static final Permission PERMISSION_ADD    = ItemsPerms.COMMAND_LORE_ADD;
+    private static final Permission PERMISSION_INSERT = ItemsPerms.COMMAND_LORE_INSERT;
+    private static final Permission PERMISSION_CLEAR  = ItemsPerms.COMMAND_LORE_CLEAR;
+    private static final Permission PERMISSION_REMOVE = ItemsPerms.COMMAND_LORE_REMOVE;
 
     private static final String COMMAND_ADD    = "add";
     private static final String COMMAND_INSERT = "insert";
     private static final String COMMAND_CLEAR  = "clear";
     private static final String COMMAND_REMOVE = "remove";
 
-    private final ItemsModule module;
+    private final ItemsModule   module;
+    private final ItemsSettings settings;
 
-    public LoreCommandsProvider(@NotNull SunLightPlugin plugin, @NotNull ItemsModule module) {
+    public LoreCommandsProvider(@NotNull SunLightPlugin plugin, @NotNull ItemsModule module, @NotNull ItemsSettings settings) {
         super(plugin);
         this.module = module;
+        this.settings = settings;
+    }
+
+    public LoreCommandsProvider(@NotNull SunLightPlugin plugin, @NotNull ItemsModule module) {
+        this(plugin, module, module.getSettings());
     }
 
     @Override
@@ -110,6 +116,29 @@ public class LoreCommandsProvider extends AbstractCommandProvider {
             int pos = arguments.contains(CommandArguments.POSITION) ? arguments.getInt(CommandArguments.POSITION) : -1;
 
             List<String> lore = ItemUtil.getLoreSerialized(itemStack);
+
+            if (!ItemsPerms.canBypassLoreLimits(player)) {
+                int maxLineLength = this.settings.loreMaxLineLength.get();
+                if (maxLineLength > 0 && text.length() > maxLineLength) {
+                    this.module.sendPrefixed(ItemsLang.ERROR_ITEM_LORE_LINE_TOO_LONG, context.getSender(), builder -> builder
+                        .with(GENERIC_MAX, () -> String.valueOf(maxLineLength))
+                        .with(GENERIC_CURRENT, () -> String.valueOf(text.length()))
+                        .with(GENERIC_AMOUNT, () -> String.valueOf(text.length()))
+                    );
+                    return false;
+                }
+
+                int maxLines = this.settings.loreMaxLines.get();
+                if (maxLines > 0 && lore.size() >= maxLines) {
+                    this.module.sendPrefixed(ItemsLang.ERROR_ITEM_LORE_MAX_LINES, context.getSender(), builder -> builder
+                        .with(GENERIC_MAX, () -> String.valueOf(maxLines))
+                        .with(GENERIC_CURRENT, () -> String.valueOf(lore.size()))
+                        .with(GENERIC_AMOUNT, () -> String.valueOf(lore.size()))
+                    );
+                    return false;
+                }
+            }
+
             if (pos >= 0 && pos < lore.size()) {
                 lore.add(pos, text);
             }

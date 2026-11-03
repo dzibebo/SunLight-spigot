@@ -472,6 +472,8 @@ Error:
   ItemNotDamageable: '[sound="minecraft:entity.villager.no;0.8;1.0"]<gray><soft_red>%item%</soft_red> 没有耐久度</gray>'
   ItemNotStackable: '[sound="minecraft:entity.villager.no;0.8;1.0"]<gray><soft_red>%item%</soft_red> 无法堆叠</gray>'
   ItemHasNoLore: '[sound="minecraft:entity.villager.no;0.8;1.0"]<gray><soft_red>%item%</soft_red> 没有属性</gray>'
+  ItemLoreMaxLines: '[sound="minecraft:entity.villager.no;0.8;1.0"]<gray>物品描述不能超过 <soft_red>%max%</soft_red> 行</gray>'
+  ItemLoreLineTooLong: '[sound="minecraft:entity.villager.no;0.8;1.0"]<gray>物品描述单行不能超过 <soft_red>%max%</soft_red> 个字符</gray>'
   ItemNotAPotion: <soft_red>你必须手持药水!</soft_red>
 Editor:
   Input:

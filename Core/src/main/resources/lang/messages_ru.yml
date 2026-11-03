@@ -615,6 +615,15 @@ Error:
   ItemNotDamageable:
   - <sound:"minecraft:block.anvil.place;0.8;1.0">
   - <lgray>Предмет <lred>%item%</lred> не имеет прочности.</lgray>
+  ItemHasNoLore:
+  - <sound:"minecraft:entity.villager.no;0.8;1.0">
+  - <lgray>У предмета <lred>%item%</lred> нет описания.</lgray>
+  ItemLoreMaxLines:
+  - <sound:"minecraft:entity.villager.no;0.8;1.0">
+  - <lgray>Описание предмета не может содержать более <lred>%max%</lred> строк.</lgray>
+  ItemLoreLineTooLong:
+  - <sound:"minecraft:entity.villager.no;0.8;1.0">
+  - <lgray>Строка описания не может быть длиннее <lred>%max%</lred> символов.</lgray>
   Command:
     Argument:
       InvalidSlot: <lgray><lred>%value%</lred> не является допустимым слотом экипировки!</lgray>

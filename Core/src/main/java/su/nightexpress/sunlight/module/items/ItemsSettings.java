@@ -18,6 +18,22 @@ public class ItemsSettings extends AbstractConfig {
         "[Default is 36]"
     );
 
+    public final ConfigProperty<Integer> loreMaxLines = this.addProperty(ConfigTypes.INT, "Commands.Lore.Max-Lines",
+        20,
+        "Sets the maximum allowed amount of lore lines on an item.",
+        "Set to -1 to disable.",
+        "[*] To bypass this limit, give '%s' permission.".formatted(ItemsPerms.BYPASS_LORE_LIMITS.getName()),
+        "[Default is 20]"
+    );
+
+    public final ConfigProperty<Integer> loreMaxLineLength = this.addProperty(ConfigTypes.INT, "Commands.Lore.Max-Line-Length",
+        80,
+        "Sets the maximum allowed character length for a single lore line.",
+        "Set to -1 to disable.",
+        "[*] To bypass this limit, give '%s' permission.".formatted(ItemsPerms.BYPASS_LORE_LIMITS.getName()),
+        "[Default is 80]"
+    );
+
     public ItemsSettings() {
 
     }
